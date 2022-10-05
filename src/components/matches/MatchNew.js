@@ -20,6 +20,11 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import dayjs from "dayjs";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -39,6 +44,10 @@ const MatchNew = () => {
     teamList: [],
     selectedTeam: [],
     selectedPlayer: [],
+    matchTitle: "",
+    liveLink: "",
+    startTime: dayjs(),
+    startDate: dayjs(),
   };
   const [values, setValues] = useState(initialState);
 
@@ -50,22 +59,59 @@ const MatchNew = () => {
   };
 
   const handleSubmit = () => {
+    console.log(values);
     setValues({ ...values, loading: true });
+    var cloneState = {};
+    Object.assign(cloneState, values);
+    var arr = [];
+    if (values.participantType == 1) {
+      arr = [
+        { ParticipantId: values.playerA },
+        { ParticipantId: values.playerB },
+      ];
+    } else if (values.participantType == 2) {
+      arr = [{ ParticipantId: values.teamA }, { ParticipantId: values.teamB }];
+    } else if (values.participantType == 3) {
+      var obj = {};
+      for (var i = 0; i < values.selectedTeam.length; i++) {
+        obj = {
+          ParticipantId: values.selectedTeam[i]["id"],
+        };
+        arr.push(obj);
+      }
+    } else if (values.participantType == 4) {
+      var obj = {};
+      arr = [];
+      for (var i = 0; i < values.selectedPlayer.length; i++) {
+        obj = {
+          ParticipantId: values.selectedPlayer[i],
+        };
+        arr.push(obj);
+      }
+    }
+    cloneState = { ...cloneState, participantId: arr };
+    console.log([cloneState, values]);
+
     axios
-      .post("https://localhost:7084/api/Game/InsertGame", {
-        GameName: values.gameName,
-        GameDescription: values.gameDescription,
-        View: values.view,
-        GroupId: values.groupId,
-        ParticipantType: values.participantType,
-        TotalMatches: values.totalMatches,
-        Category: values.category,
+      .post("https://localhost:7084/api/Game/InsertMatch", {
+        GameId: cloneState.gameId,
+        View: cloneState.view,
+        MatchTitle: cloneState.matchTitle,
+        matchParticipants: cloneState.participantId,
+        LiveLink: cloneState.liveLink,
+        StartTime: cloneState.startTime,
+        StartDate: cloneState.StartDate,
       })
       .then((response) => {
         if (response.data.value) {
           const data = JSON.parse(response.data.value);
           if (data.Status == 200) {
-            setValues({ ...initialState, open: true, success: true });
+            setValues({
+              ...initialState,
+              gameList: values.gameList,
+              open: true,
+              success: true,
+            });
           } else {
             setValues({
               ...values,
@@ -83,7 +129,8 @@ const MatchNew = () => {
           });
         }
       })
-      .catch((result) => {
+      .catch((error) => {
+        console.log(error);
         setValues({
           ...values,
           loading: false,
@@ -136,7 +183,6 @@ const MatchNew = () => {
   }, []);
 
   useEffect(() => {
-    console.log(values);
     if (values.participantType == 1 || values.participantType == 4) {
       axios
         .post("https://localhost:7084/api/Game/GetPlayerByGameId", {
@@ -216,220 +262,270 @@ const MatchNew = () => {
     { field: "playerName", headerName: "Player Name", width: 150 },
   ];
 
+  const handleDateChange = (newValue) => {
+    setValues({ ...values, startDate: newValue });
+  };
+  const handleTimeChange = (newValue) => {
+    setValues({ ...values, startTime: newValue });
+  };
   return (
-    <Box
-      component="form"
-      sx={{
-        "& .MuiTextField-root": { m: 1, width: "25ch" },
-      }}
-      autoComplete="off"
-      style={{ boxShadow: "0px 0px 2px 0px rgba(0,0,0,0.50)" }}
-    >
-      <Card>
-        <Snackbar
-          open={values.open}
-          autoHideDuration={1000}
-          onClose={handleAlertClose}
-        >
-          <Alert
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Box
+        component="form"
+        sx={{
+          "& .MuiTextField-root": { m: 1, width: "25ch" },
+        }}
+        autoComplete="off"
+        style={{ boxShadow: "0px 0px 2px 0px rgba(0,0,0,0.50)" }}
+      >
+        <Card>
+          <Snackbar
+            open={values.open}
+            autoHideDuration={1000}
             onClose={handleAlertClose}
-            severity={values.success ? "success" : "error"}
-            sx={{ width: "100%" }}
           >
-            {values.success ? "Succesfully Saved" : "Failed to save"}
-          </Alert>
-        </Snackbar>
-        <CardHeader subheader="Create new game" title="Game" />
-        <Divider />
-        <CardContent>
-          <Grid container spacing={1}>
-            <Grid item md={3} xs={12}>
-              <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
-                <InputLabel id="game-label">Game Name</InputLabel>
-                <Select
-                  labelId="game-label"
-                  id="game-select"
-                  value={values.gameId}
-                  label="Game Name"
-                  name="gameId"
+            <Alert
+              onClose={handleAlertClose}
+              severity={values.success ? "success" : "error"}
+              sx={{ width: "100%" }}
+            >
+              {values.success ? "Succesfully Saved" : "Failed to save"}
+            </Alert>
+          </Snackbar>
+          <CardHeader subheader="Create new game" title="Game" />
+          <Divider />
+          <CardContent>
+            <Grid container spacing={1}>
+              <Grid item md={3} xs={12}>
+                <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
+                  <InputLabel id="game-label">Game Name</InputLabel>
+                  <Select
+                    labelId="game-label"
+                    id="game-select"
+                    value={values.gameId}
+                    label="Game Name"
+                    name="gameId"
+                    onChange={handleChange}
+                  >
+                    {values.gameList.map((game) => (
+                      <MenuItem value={game.id} key={game.id}>
+                        {game.gameName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item md={3} xs={12}>
+                <TextField
+                  sx={{ width: "100% !important" }}
+                  helperText="Please specify Match Title"
+                  label="Match Title"
+                  name="matchTitle"
                   onChange={handleChange}
+                  required
+                  value={values.matchTitle}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item md={3} xs={12}>
+                <TextField
+                  sx={{ width: "100% !important" }}
+                  helperText="Please specify Video Link"
+                  label="Live Link"
+                  name="liveLink"
+                  onChange={handleChange}
+                  required
+                  value={values.liveLink}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item md={3} xs={12} sx={{ display: "flex !important" }}>
+                <FormControlLabel
+                  sx={{ ml: 2 }}
+                  control={
+                    <IosSwitch
+                      onChange={() =>
+                        setValues({ ...values, view: !values.view })
+                      }
+                      sx={{ mr: 2 }}
+                      defaultChecked
+                    />
+                  }
+                  label="View"
+                />
+              </Grid>
+              <Grid item md={3} xs={12}>
+                <DesktopDatePicker
+                  label="Start Date"
+                  inputFormat="MM/DD/YYYY"
+                  value={values.startDate}
+                  onChange={handleDateChange}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </Grid>
+
+              <Grid item md={3} xs={12}>
+                <TimePicker
+                  label="Start Time"
+                  value={values.startTime}
+                  onChange={handleTimeChange}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </Grid>
+
+              {values.participantType == 1 && (
+                <>
+                  <Grid item md={3} xs={12}>
+                    <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
+                      <InputLabel id="playerA-label">Player A</InputLabel>
+                      <Select
+                        labelId="playerA-label"
+                        id="playerA-select"
+                        value={values.playerA}
+                        label="Player A"
+                        name="playerA"
+                        onChange={handleChange}
+                      >
+                        {values.playerList.map((player) => (
+                          <MenuItem value={player.id} key={player.id}>
+                            {player.playerName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item md={3} xs={12}>
+                    <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
+                      <InputLabel id="playerB-label">Player B</InputLabel>
+                      <Select
+                        labelId="playerB-label"
+                        id="playerB-select"
+                        value={values.playerB}
+                        label="Player B"
+                        name="playerB"
+                        onChange={handleChange}
+                      >
+                        {values.playerList.map((player) => (
+                          <MenuItem value={player.id} key={player.id}>
+                            {player.playerName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </>
+              )}
+
+              {values.participantType == 2 && (
+                <>
+                  <Grid item md={3} xs={12}>
+                    <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
+                      <InputLabel id="teamA-label">Team A</InputLabel>
+                      <Select
+                        labelId="teamA-label"
+                        id="teamA-select"
+                        value={values.teamA}
+                        label="Team A"
+                        name="teamA"
+                        onChange={handleChange}
+                      >
+                        {values.teamList.map((team) => (
+                          <MenuItem value={team.id} key={team.id}>
+                            {team.teamName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item md={3} xs={12}>
+                    <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
+                      <InputLabel id="teamB-label">Team B</InputLabel>
+                      <Select
+                        labelId="teamB-label"
+                        id="teamB-select"
+                        value={values.teamB}
+                        label="Team B"
+                        name="teamB"
+                        onChange={handleChange}
+                      >
+                        {values.teamList.map((team) => (
+                          <MenuItem value={team.id} key={team.id}>
+                            {team.teamName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </>
+              )}
+
+              {values.participantType == 3 && (
+                <>
+                  <Grid item md={5} xs={12}>
+                    <Box sx={{ height: 400, width: "100%" }}>
+                      <DataGrid
+                        rows={values.teamList}
+                        columns={teamColumn}
+                        pageSize={5}
+                        rowsPerPageOptions={[5]}
+                        checkboxSelection
+                        disableSelectionOnClick
+                        experimentalFeatures={{ newEditingApi: true }}
+                        onSelectionModelChange={(newSelection) => {
+                          setValues({
+                            ...values,
+                            selectedTeam: newSelection,
+                          });
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </>
+              )}
+
+              {values.participantType == 4 && (
+                <>
+                  <Grid item md={5} xs={12}>
+                    <Box sx={{ height: 400, width: "100%" }}>
+                      <DataGrid
+                        rows={values.playerList}
+                        columns={playerColumn}
+                        pageSize={5}
+                        rowsPerPageOptions={[5]}
+                        checkboxSelection
+                        disableSelectionOnClick
+                        experimentalFeatures={{ newEditingApi: true }}
+                        onSelectionModelChange={(newSelection) => {
+                          setValues({
+                            ...values,
+                            selectedPlayer: newSelection,
+                          });
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </>
+              )}
+
+              <Grid item xs={12}>
+                <LoadingButton
+                  sx={{ ml: 2 }}
+                  loadingPosition="start"
+                  startIcon={<SaveIcon />}
+                  variant="outlined"
+                  onClick={handleSubmit}
+                  loading={values.loading ? true : false}
                 >
-                  {values.gameList.map((game) => (
-                    <MenuItem value={game.id} key={game.id}>
-                      {game.gameName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  Save
+                </LoadingButton>
+              </Grid>
             </Grid>
-
-            <Grid item md={9} xs={12} sx={{ display: "flex !important" }}>
-              <FormControlLabel
-                sx={{ ml: 2 }}
-                control={
-                  <IosSwitch
-                    onChange={() =>
-                      setValues({ ...values, view: !values.view })
-                    }
-                    sx={{ mr: 2 }}
-                    defaultChecked
-                  />
-                }
-                label="View"
-              />
-            </Grid>
-            {values.participantType == 1 && (
-              <>
-                <Grid item md={3} xs={12}>
-                  <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
-                    <InputLabel id="playerA-label">Player A</InputLabel>
-                    <Select
-                      labelId="playerA-label"
-                      id="playerA-select"
-                      value={values.playerA}
-                      label="Player A"
-                      name="playerA"
-                      onChange={handleChange}
-                    >
-                      {values.playerList.map((player) => (
-                        <MenuItem value={player.id} key={player.id}>
-                          {player.playerName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item md={3} xs={12}>
-                  <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
-                    <InputLabel id="playerB-label">Player B</InputLabel>
-                    <Select
-                      labelId="playerB-label"
-                      id="playerB-select"
-                      value={values.playerB}
-                      label="Player B"
-                      name="playerB"
-                      onChange={handleChange}
-                    >
-                      {values.playerList.map((player) => (
-                        <MenuItem value={player.id} key={player.id}>
-                          {player.playerName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </>
-            )}
-
-            {values.participantType == 2 && (
-              <>
-                <Grid item md={3} xs={12}>
-                  <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
-                    <InputLabel id="teamA-label">Team A</InputLabel>
-                    <Select
-                      labelId="teamA-label"
-                      id="teamA-select"
-                      value={values.teamA}
-                      label="Team A"
-                      name="teamA"
-                      onChange={handleChange}
-                    >
-                      {values.teamList.map((team) => (
-                        <MenuItem value={team.id} key={team.id}>
-                          {team.teamName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item md={3} xs={12}>
-                  <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
-                    <InputLabel id="teamB-label">Team B</InputLabel>
-                    <Select
-                      labelId="teamB-label"
-                      id="teamB-select"
-                      value={values.teamB}
-                      label="Team B"
-                      name="teamB"
-                      onChange={handleChange}
-                    >
-                      {values.teamList.map((team) => (
-                        <MenuItem value={team.id} key={team.id}>
-                          {team.teamName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </>
-            )}
-
-            {values.participantType == 3 && (
-              <>
-                <Grid item md={12} xs={12}>
-                  <Box sx={{ height: 400, width: "100%" }}>
-                    <DataGrid
-                      rows={values.teamList}
-                      columns={teamColumn}
-                      pageSize={5}
-                      rowsPerPageOptions={[5]}
-                      checkboxSelection
-                      disableSelectionOnClick
-                      experimentalFeatures={{ newEditingApi: true }}
-                      onSelectionChange={(newSelection) => {
-                        setValues({
-                          ...values,
-                          selectedTeam: newSelection.rows,
-                        });
-                      }}
-                    />
-                  </Box>
-                </Grid>
-              </>
-            )}
-
-            {values.participantType == 4 && (
-              <>
-                <Grid item md={5} xs={12}>
-                  <Box sx={{ height: 400, width: "100%" }}>
-                    <DataGrid
-                      rows={values.playerList}
-                      columns={playerColumn}
-                      pageSize={5}
-                      rowsPerPageOptions={[5]}
-                      checkboxSelection
-                      disableSelectionOnClick
-                      experimentalFeatures={{ newEditingApi: true }}
-                      onSelectionChange={(newSelection) => {
-                        setValues({
-                          ...values,
-                          selectedPlayer: newSelection.rows,
-                        });
-                      }}
-                    />
-                  </Box>
-                </Grid>
-              </>
-            )}
-
-            <Grid item xs={12}>
-              <LoadingButton
-                sx={{ ml: 2 }}
-                loadingPosition="start"
-                startIcon={<SaveIcon />}
-                variant="outlined"
-                onClick={handleSubmit}
-                loading={values.loading ? true : false}
-              >
-                Save
-              </LoadingButton>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-    </Box>
+          </CardContent>
+        </Card>
+      </Box>
+    </LocalizationProvider>
   );
 };
 

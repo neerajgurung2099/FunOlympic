@@ -5,15 +5,15 @@ import GameGroupList from "./components/gamegroup/GameGroupList";
 import GameGroupNew from "./components/gamegroup/GameGroupNew";
 import MatchList from "./components/matches/MatchList";
 import MatchNew from "./components/matches/MatchNew";
-import Gallery from "./pages/Gallery";
-import Game from "./pages/Game";
-import GameGroup from "./pages/GameGroup";
+import Gallery from "./pages/admin/Gallery";
+import Game from "./pages/admin/Game";
+import GameGroup from "./pages/admin/GameGroup";
 
-import Home from "./pages/Home";
-import Matches from "./pages/Matches";
-import News from "./pages/News";
-import Results from "./pages/Results";
-import User from "./pages/User";
+import Home from "./pages/admin/Home";
+import Matches from "./pages/admin/Matches";
+import News from "./pages/admin/News";
+import Results from "./pages/admin/Results";
+import User from "./pages/admin/User";
 
 function App() {
   return (

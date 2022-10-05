@@ -15,10 +15,9 @@ const MatchList = () => {
   });
 
   const columns = [
-    { field: "sno", headerName: "SNO", width: 70 },
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "groupName", headerName: "Group name", width: 250 },
-    { field: "groupDescription", headerName: "Group Description", width: 300 },
+    { field: "id", headerName: "SNO", width: 70 },
+    { field: "gameName", headerName: "Game Name", width: 150 },
+    { field: "matchTitle", headerName: "Match Title", width: 150 },
     {
       field: "view",
       headerName: "View",
