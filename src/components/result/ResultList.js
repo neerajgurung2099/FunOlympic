@@ -7,7 +7,9 @@ import Checkbox from "@mui/material/Checkbox";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { Typography } from "@mui/material";
-const MatchList = () => {
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
+const ResultList = () => {
   const [state, setState] = useState({
     loading: true,
     errorFetching: false,
@@ -15,27 +17,19 @@ const MatchList = () => {
   });
 
   const columns = [
-    { field: "id", headerName: "SNO", width: 70 },
+    { field: "id", headerName: "Match Id", width: 70 },
     { field: "gameName", headerName: "Game Name", width: 150 },
-    { field: "matchTitle", headerName: "Match Title", width: 300 },
-    {
-      field: "view",
-      headerName: "View",
-      sortable: false,
-      width: 100,
-    },
-    { field: "startDate", headerName: "Start Date", width: 200 },
-    { field: "startTime", headerName: "Start Time", width: 200 },
+    { field: "matchTitle", headerName: "Match Title", width: 400 },
     {
       field: "actions",
       headerName: "Actions",
-      width: 160,
-      renderCell: () => {
+      width: 200,
+      renderCell: (params) => {
+        console.log(params.id);
         return (
-          <div className="cell-action">
-            <div className="view-button">View</div>
-            <div className="delete-button">Delete</div>
-          </div>
+          <Button component={Link} to={"" + params.id} variant="outlined">
+            Manage Result
+          </Button>
         );
       },
     },
@@ -60,7 +54,7 @@ const MatchList = () => {
             var obj = {};
             for (var i = 0; i < result.length; i++) {
               obj = {
-                id: i + 1,
+                id: result[i]["Match_Id"],
                 gameName: result[i]["Game_Name"],
                 matchTitle: result[i]["Match_Title"],
                 view: result[i]["View"],
@@ -111,6 +105,7 @@ const MatchList = () => {
               rows={state.rows}
               columns={columns}
               pageSize={10}
+              disableSelectionOnClick
               rowsPerPageOptions={[10]}
             />
             <Snackbar
@@ -133,4 +128,4 @@ const MatchList = () => {
   );
 };
 
-export default MatchList;
+export default ResultList;

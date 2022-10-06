@@ -3,11 +3,10 @@ import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import { Box } from "@mui/system";
 import Skeleton from "@mui/material/Skeleton";
-import Checkbox from "@mui/material/Checkbox";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { Typography } from "@mui/material";
-const MatchList = () => {
+const CountryList = () => {
   const [state, setState] = useState({
     loading: true,
     errorFetching: false,
@@ -16,16 +15,7 @@ const MatchList = () => {
 
   const columns = [
     { field: "id", headerName: "SNO", width: 70 },
-    { field: "gameName", headerName: "Game Name", width: 150 },
-    { field: "matchTitle", headerName: "Match Title", width: 300 },
-    {
-      field: "view",
-      headerName: "View",
-      sortable: false,
-      width: 100,
-    },
-    { field: "startDate", headerName: "Start Date", width: 200 },
-    { field: "startTime", headerName: "Start Time", width: 200 },
+    { field: "countryName", headerName: "Country Name", width: 900 },
     {
       field: "actions",
       headerName: "Actions",
@@ -50,7 +40,7 @@ const MatchList = () => {
   useEffect(() => {
     setState({ ...state, loading: true });
     axios
-      .get("https://localhost:7084/api/Game/GetAllMatches")
+      .get("https://localhost:7084/api/Game/GetAllCountry")
       .then((response) => {
         if (response.data.value) {
           var result = JSON.parse(response.data.value);
@@ -61,11 +51,7 @@ const MatchList = () => {
             for (var i = 0; i < result.length; i++) {
               obj = {
                 id: i + 1,
-                gameName: result[i]["Game_Name"],
-                matchTitle: result[i]["Match_Title"],
-                view: result[i]["View"],
-                startDate: result[i]["Start_Date"],
-                startTime: result[i]["Start_Time"],
+                countryName: result[i]["Country_Name"],
               };
               arr.push(obj);
             }
@@ -133,4 +119,4 @@ const MatchList = () => {
   );
 };
 
-export default MatchList;
+export default CountryList;

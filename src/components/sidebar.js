@@ -17,6 +17,8 @@ import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SportsIcon from "@mui/icons-material/Sports";
+import SportsMartialArtsIcon from "@mui/icons-material/SportsMartialArts";
+import GroupsIcon from "@mui/icons-material/Groups";
 const SideBarNavList = [
   { id: "dashboard", title: "Dashboard", route: "/", icon: <DashboardIcon /> },
   { id: "user", title: "User", route: "/user", icon: <GroupIcon /> },
@@ -47,6 +49,24 @@ const SideBarNavList = [
     icon: <CollectionsIcon />,
   },
   { id: "news", title: "News", route: "/news", icon: <NewspaperIcon /> },
+  {
+    id: "players",
+    title: "Players",
+    route: "/players",
+    icon: <SportsMartialArtsIcon />,
+  },
+  {
+    id: "teams",
+    title: "Teams",
+    route: "/teams",
+    icon: <GroupsIcon />,
+  },
+  {
+    id: "country",
+    title: "Country",
+    route: "/country",
+    icon: <GroupsIcon />,
+  },
 ];
 
 function Sidebar(props) {

@@ -46,8 +46,7 @@ const MatchNew = () => {
     selectedPlayer: [],
     matchTitle: "",
     liveLink: "",
-    startTime: dayjs(),
-    startDate: dayjs(),
+    startDateTime: dayjs(),
   };
   const [values, setValues] = useState(initialState);
 
@@ -91,7 +90,8 @@ const MatchNew = () => {
     }
     cloneState = { ...cloneState, participantId: arr };
     console.log([cloneState, values]);
-
+    console.log(dayjs(cloneState.startDateTime).format("LT"));
+    console.log(dayjs(cloneState.startDateTime).format("MM/DD/YYYY"));
     axios
       .post("https://localhost:7084/api/Game/InsertMatch", {
         GameId: cloneState.gameId,
@@ -99,8 +99,8 @@ const MatchNew = () => {
         MatchTitle: cloneState.matchTitle,
         matchParticipants: cloneState.participantId,
         LiveLink: cloneState.liveLink,
-        StartTime: cloneState.startTime,
-        StartDate: cloneState.StartDate,
+        startTime: dayjs(cloneState.startDateTime).format("LT"),
+        startDate: dayjs(cloneState.startDateTime).format("MM/DD/YYYY"),
       })
       .then((response) => {
         if (response.data.value) {
@@ -262,11 +262,8 @@ const MatchNew = () => {
     { field: "playerName", headerName: "Player Name", width: 150 },
   ];
 
-  const handleDateChange = (newValue) => {
-    setValues({ ...values, startDate: newValue });
-  };
-  const handleTimeChange = (newValue) => {
-    setValues({ ...values, startTime: newValue });
+  const handleDateTimeChange = (newValue) => {
+    setValues({ ...values, startDateTime: newValue });
   };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -358,8 +355,8 @@ const MatchNew = () => {
                 <DesktopDatePicker
                   label="Start Date"
                   inputFormat="MM/DD/YYYY"
-                  value={values.startDate}
-                  onChange={handleDateChange}
+                  value={values.startDateTime}
+                  onChange={handleDateTimeChange}
                   renderInput={(params) => <TextField {...params} />}
                 />
               </Grid>
@@ -367,8 +364,8 @@ const MatchNew = () => {
               <Grid item md={3} xs={12}>
                 <TimePicker
                   label="Start Time"
-                  value={values.startTime}
-                  onChange={handleTimeChange}
+                  value={values.startDateTime}
+                  onChange={handleDateTimeChange}
                   renderInput={(params) => <TextField {...params} />}
                 />
               </Grid>
