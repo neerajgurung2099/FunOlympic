@@ -65,7 +65,11 @@ const ResultDetails = () => {
               arr.push(obj);
             }
 
-            setState({ ...state, ParticipantList: arr });
+            setState({
+              ...state,
+              ParticipantType: result[0]["ParticipantType"],
+              ParticipantList: arr,
+            });
           }
         }
       })
@@ -81,7 +85,7 @@ const ResultDetails = () => {
   const handleSubmit = () => {
     setState({ ...state, loading: true });
     var arr = [];
-    if (state.ParticipantType == 1 || 2) {
+    if (state.ParticipantType == 1 || state.ParticipantType == 2) {
       arr.push({
         MatchParticipantId: state.FirstId,
         Points: state.PointA,
@@ -91,7 +95,16 @@ const ResultDetails = () => {
         Points: state.PointB,
       });
     } else {
+      var obj = {};
+      for (var i = 0; i < state.ParticipantList.length; i++) {
+        obj = {
+          MatchParticipantId: state.ParticipantList[i]["id"],
+          Points: state.ParticipantList[i]["points"],
+        };
+        arr.push(obj);
+      }
     }
+    console.log(state);
     console.log(arr);
     axios
       .post("https://localhost:7084/api/Game/InsertMatchPoints", {
@@ -236,8 +249,18 @@ const ResultDetails = () => {
                     rowsPerPageOptions={[5]}
                     disableSelectionOnClick
                     experimentalFeatures={{ newEditingApi: true }}
-                    cellValueChanged={(params) => {
-                      console.log(params);
+                    processRowUpdate={(params) => {
+                      var arr = [];
+                      Object.assign(arr, state.ParticipantList);
+                      for (var i = 0; i < arr.length; i++) {
+                        if (arr[i]["id"] == params.id) {
+                          arr[i]["points"] = params.points;
+                        }
+                      }
+                      setState({ ...state, ParticipantList: arr });
+                    }}
+                    onProcessRowUpdateError={(error) => {
+                      console.log(error);
                     }}
                   />
                 </Box>
@@ -249,7 +272,7 @@ const ResultDetails = () => {
                 loadingPosition="start"
                 startIcon={<SaveIcon />}
                 variant="outlined"
-                onClick={handleClick}
+                onClick={handleSubmit}
                 loading={state.loading ? true : false}
               >
                 Save

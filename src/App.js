@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CountryList from "./components/country/CountryList";
 import CountryNew from "./components/country/CountryNew";
+import GalleryDetail from "./components/gallery/GalleryDetail";
 import GameList from "./components/game/GameList";
 import GameNew from "./components/game/GameNew";
 import GameGroupList from "./components/gamegroup/GameGroupList";
@@ -61,6 +62,10 @@ function App() {
         <Route path="/results" element={<Results />}>
           <Route index element={<ResultList />} />
           <Route path=":matchId" element={<ResultDetails />} />
+        </Route>
+
+        <Route path="/gallery" element={<Gallery />}>
+          <Route index element={<GalleryDetail />} />
         </Route>
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/news" element={<News />} />
