@@ -90,7 +90,7 @@ const MatchNew = () => {
     }
     cloneState = { ...cloneState, participantId: arr };
     console.log([cloneState, values]);
-    console.log(dayjs(cloneState.startDateTime).format("LT"));
+    console.log(dayjs(cloneState.startDateTime).format("HH:mm:ss"));
     console.log(dayjs(cloneState.startDateTime).format("MM/DD/YYYY"));
     axios
       .post("https://localhost:7084/api/Game/InsertMatch", {
@@ -99,7 +99,7 @@ const MatchNew = () => {
         MatchTitle: cloneState.matchTitle,
         matchParticipants: cloneState.participantId,
         LiveLink: cloneState.liveLink,
-        startTime: dayjs(cloneState.startDateTime).format("LT"),
+        startTime: dayjs(cloneState.startDateTime).format("HH:mm:ss"),
         startDate: dayjs(cloneState.startDateTime).format("MM/DD/YYYY"),
       })
       .then((response) => {

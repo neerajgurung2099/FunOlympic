@@ -8,6 +8,8 @@ import GameGroupList from "./components/gamegroup/GameGroupList";
 import GameGroupNew from "./components/gamegroup/GameGroupNew";
 import MatchList from "./components/matches/MatchList";
 import MatchNew from "./components/matches/MatchNew";
+import NewsAdd from "./components/news/NewsAdd";
+import NewsList from "./components/news/NewsList";
 import Playerlist from "./components/player/Playerlist";
 import PlayerNew from "./components/player/PlayerNew";
 import ResultDetails from "./components/result/ResultDetails";
@@ -26,6 +28,8 @@ import Player from "./pages/admin/Player";
 import Results from "./pages/admin/Results";
 import Team from "./pages/admin/Team";
 import User from "./pages/admin/User";
+import FunOlympic from "./pages/public/FunOlympic";
+import LiveGames from "./pages/public/livegame/LiveGames";
 
 function App() {
   return (
@@ -67,8 +71,14 @@ function App() {
         <Route path="/gallery" element={<Gallery />}>
           <Route index element={<GalleryDetail />} />
         </Route>
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/news" element={<News />} />
+
+        <Route path="/news" element={<News />}>
+          <Route index element={<NewsList />} />
+          <Route path="new" element={<NewsAdd />} />
+        </Route>
+        <Route path="/funolympic" element={<FunOlympic />}>
+          <Route path="livegames" element={<LiveGames />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
