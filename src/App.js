@@ -29,7 +29,9 @@ import Results from "./pages/admin/Results";
 import Team from "./pages/admin/Team";
 import User from "./pages/admin/User";
 import FunOlympic from "./pages/public/FunOlympic";
+import GameSchedule from "./pages/public/gameschedule/GameSchedule";
 import LiveGames from "./pages/public/livegame/LiveGames";
+import WatchGame from "./pages/public/watchgame/WatchGame";
 
 function App() {
   return (
@@ -77,7 +79,11 @@ function App() {
           <Route path="new" element={<NewsAdd />} />
         </Route>
         <Route path="/funolympic" element={<FunOlympic />}>
-          <Route path="livegames" element={<LiveGames />} />
+          <Route index path="livegames" element={<LiveGames />} />
+          <Route path="watchgame">
+            <Route path=":matchId" element={<WatchGame />} />
+          </Route>
+          <Route path="gameschedule" element={<GameSchedule />} />
         </Route>
       </Routes>
     </BrowserRouter>

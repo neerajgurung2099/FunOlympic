@@ -9,7 +9,7 @@ import { Outlet } from "react-router-dom";
 const sections = [
   { title: "Home", url: "#" },
   { title: "Live Games", url: "livegames" },
-  { title: "Game Schedule", url: "#" },
+  { title: "Game Schedule", url: "gameschedule" },
   { title: "Game Results", url: "#" },
   { title: "News", url: "#" },
   { title: "Gallery", url: "#" },

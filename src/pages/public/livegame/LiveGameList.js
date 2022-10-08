@@ -5,10 +5,12 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Box, Grid } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 const LiveGameList = () => {
   const initialState = {
     LiveGames: [],
   };
+  const navigate = useNavigate();
   const [state, setState] = useState(initialState);
 
   const ImageList = [
@@ -44,35 +46,29 @@ const LiveGameList = () => {
       });
   }, []);
   return (
-    <Box sx={{ mb: 5 }}>
-      <Typography>Live Games</Typography>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        {console.log(state)}
-
-        {state.LiveGames.map((game) => (
-          <Grid item xs={2} sm={4} md={2} key={game.Match_Id}>
-            <Card sx={{ maxWidth: 230 }}>
-              <CardMedia component="img" height="100" image={game.Image} />
-              <CardContent
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  height: 20,
-                }}
-              >
-                <Typography variant="body2" color="text.secondary">
-                  {game.MatchTitle}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+    <>
+      {state.LiveGames.map((game) => (
+        <Grid item xs={2} sm={4} md={2} key={game.Match_Id}>
+          <Card
+            onClick={() => navigate(`watchgame/${game.Match_Id}`)}
+            sx={{ maxWidth: 230 }}
+          >
+            <CardMedia component="img" height="100" image={game.Image} />
+            <CardContent
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                height: 20,
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                {game.MatchTitle}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </>
   );
 };
 
