@@ -4,11 +4,11 @@ import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Box, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-const LiveGameList = () => {
+const NewsList = () => {
   const initialState = {
-    LiveGames: [],
+    NewsList: [],
   };
   const navigate = useNavigate();
   const [state, setState] = useState(initialState);
@@ -25,35 +25,42 @@ const LiveGameList = () => {
 
   useEffect(() => {
     axios
-      .get("https://localhost:7084/api/Public/GetCurrentLiveGames")
+      .get("https://localhost:7084/api/Public/GetAllNews")
       .then((response) => {
-        var result = JSON.parse(response.data.value);
-        console.log(result);
-        var arr = [];
-        var obj = {};
-        for (var i = 0; i < result.length; i++) {
-          obj = {
-            Match_Id: result[i]["Match_Id"],
-            MatchTitle: result[i]["Match_Title"],
-            Image: ImageList[i],
-          };
-          arr.push(obj);
+        if (response.data.value) {
+          var result = JSON.parse(response.data.value);
+          if (result.length >= 0) {
+            console.log(result);
+            var arr = [];
+            var obj = {};
+            for (var i = 0; i < result.length; i++) {
+              obj = {
+                NewsId: result[i]["News_Id"],
+                NewsTitle: result[i]["News_Title"],
+                Image: ImageList[i],
+              };
+              arr.push(obj);
+            }
+            setState({ NewsList: arr });
+          } else {
+          }
+        } else {
         }
-        setState({ LiveGames: arr });
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+
   return (
     <>
-      {state.LiveGames.map((game) => (
-        <Grid item xs={6} sm={4} md={3} key={game.Match_Id}>
+      {state.NewsList.map((news) => (
+        <Grid item xs={6} sm={6} md={4} key={news.id}>
           <Card
-            onClick={() => navigate(`/funolympic/watchgame/${game.Match_Id}`)}
+            onClick={() => navigate(`${news.NewsId}`)}
             sx={{ maxWidth: 400, cursor: "pointer" }}
           >
-            <CardMedia component="img" height="150" image={game.Image} />
+            <CardMedia component="img" height="200" image={news.Image} />
             <CardContent
               sx={{
                 display: "flex",
@@ -62,7 +69,7 @@ const LiveGameList = () => {
               }}
             >
               <Typography variant="body2" color="text.secondary">
-                {game.MatchTitle}
+                {news.NewsTitle}
               </Typography>
             </CardContent>
           </Card>
@@ -72,4 +79,4 @@ const LiveGameList = () => {
   );
 };
 
-export default LiveGameList;
+export default NewsList;

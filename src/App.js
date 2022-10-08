@@ -29,8 +29,13 @@ import Results from "./pages/admin/Results";
 import Team from "./pages/admin/Team";
 import User from "./pages/admin/User";
 import FunOlympic from "./pages/public/FunOlympic";
+import PublicGallery from "./pages/public/gallery/PublicGallery";
 import GameSchedule from "./pages/public/gameschedule/GameSchedule";
 import LiveGames from "./pages/public/livegame/LiveGames";
+import Login from "./pages/public/login/Login";
+import NewsDetail from "./pages/public/news/NewsDetail";
+import PublicNews from "./pages/public/news/PublicNews";
+import PublicResults from "./pages/public/results/PublicResults";
 import WatchGame from "./pages/public/watchgame/WatchGame";
 
 function App() {
@@ -84,7 +89,13 @@ function App() {
             <Route path=":matchId" element={<WatchGame />} />
           </Route>
           <Route path="gameschedule" element={<GameSchedule />} />
+          <Route path="publicgallery" element={<PublicGallery />} />
+          <Route path="news" element={<PublicNews />}></Route>
+          <Route path="news/:newsId" element={<NewsDetail />} />
+
+          <Route path="results" element={<PublicResults />} />
         </Route>
+        <Route path="login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );

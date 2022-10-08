@@ -6,7 +6,8 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
-const UpComingGame = () => {
+import { Divider, Box } from "@mui/material";
+const GameGroupList = ({ handleClick }) => {
   const initialState = {
     games: [],
   };
@@ -15,9 +16,8 @@ const UpComingGame = () => {
 
   useEffect(() => {
     axios
-      .get("https://localhost:7084/api/Public/GetUpcomingLiveSchedule")
+      .get("https://localhost:7084/api/Public/GetGameMatchList")
       .then((response) => {
-        console.log(response.data.value);
         setState({ games: response.data.value });
       })
       .catch((error) => console.log(error));
@@ -31,7 +31,6 @@ const UpComingGame = () => {
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            {console.log(group)}
             <Typography>{group.groupName}</Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ padding: "0 !important" }}>
@@ -42,14 +41,22 @@ const UpComingGame = () => {
                   aria-controls="panel1a-content"
                   id="panel1a-header"
                 >
-                  {console.log(game)}
                   <Typography>{game.gameName}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   {game.matches?.map((match) => (
-                    <Typography key={match.matchId}>
-                      {`${match.matchTitle} - ${match.startDateTime} ${match.startTime} `}
-                    </Typography>
+                    <Box
+                      key={match.matchId}
+                      onClick={() => handleClick(match.matchId)}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <Typography>{`TITLE - ${match.matchTitle}`}</Typography>
+
+                      <Typography>
+                        {`DATE - ${match.startDateTime} `}
+                      </Typography>
+                      <Divider />
+                    </Box>
                   ))}
                 </AccordionDetails>
               </Accordion>
@@ -61,4 +68,4 @@ const UpComingGame = () => {
   );
 };
 
-export default UpComingGame;
+export default GameGroupList;

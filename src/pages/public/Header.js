@@ -21,7 +21,7 @@ function Header(props) {
         >
           {title}
         </Typography>
-        <Button variant="outlined" size="small">
+        <Button component={Link} to="/login" variant="outlined" size="small">
           Sign up
         </Button>
       </Toolbar>

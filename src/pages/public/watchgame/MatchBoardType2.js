@@ -2,14 +2,18 @@ import React from "react";
 
 import { Grid, Box, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-const MatchBoardType2 = ({ participantList }) => {
+const MatchBoardType2 = ({ participantList, columnSize }) => {
   const participantColumn = [
-    { field: "id", headerName: "Sno", width: 150 },
-    { field: "participantname", headerName: "Participant Name", width: 800 },
+    { field: "id", headerName: "Sno", width: columnSize.id },
+    {
+      field: "participantname",
+      headerName: "Participant Name",
+      width: columnSize.name,
+    },
     {
       field: "points",
       headerName: "Points",
-      width: 150,
+      width: columnSize.point,
       type: "number",
     },
   ];
@@ -28,7 +32,6 @@ const MatchBoardType2 = ({ participantList }) => {
           justifyContent: "center",
         }}
       >
-        <Typography sx={{ mb: 1 }}>Live Results</Typography>
         <Box sx={{ height: 400, width: "100%" }}>
           <DataGrid
             rows={participantList}

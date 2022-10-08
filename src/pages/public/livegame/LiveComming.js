@@ -45,7 +45,9 @@ const LiveComming = () => {
   }, []);
   return (
     <Box>
-      <Typography>Comming Up</Typography>
+      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+        Comming Up
+      </Typography>
       <Grid
         container
         spacing={{ xs: 2, md: 3 }}
@@ -54,14 +56,14 @@ const LiveComming = () => {
         {console.log(state)}
 
         {state.LiveGames.map((game) => (
-          <Grid item xs={2} sm={4} md={2} key={game.Match_Id}>
-            <Card sx={{ maxWidth: 230 }}>
-              <CardMedia component="img" height="100" image={game.Image} />
+          <Grid item xs={6} sm={4} md={3} key={game.Match_Id}>
+            <Card sx={{ maxWidth: 400, cursor: "pointer" }}>
+              <CardMedia component="img" height="150" image={game.Image} />
               <CardContent
                 sx={{
                   display: "flex",
                   justifyContent: "center",
-                  height: 20,
+                  height: 80,
                 }}
               >
                 <Typography variant="body2" color="text.secondary">

@@ -3,16 +3,18 @@ import LiveGameList from "./LiveGameList";
 import LiveComming from "./LiveComming";
 import { Box } from "@mui/system";
 import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import { Grid, Divider } from "@mui/material";
 const LiveGames = () => {
   return (
     <Box>
-      <Box sx={{ mb: 5, mt: 5 }}>
-        <Typography>Live Games</Typography>
+      <Box sx={{ mb: 5, mt: 1 }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Live
+        </Typography>
         <Grid
           container
           spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 4, sm: 8, md: 12 }}
+          columns={{ xs: 12, sm: 12, md: 12 }}
         >
           <LiveGameList />
         </Grid>

@@ -7,13 +7,11 @@ import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
 
 const sections = [
-  { title: "Home", url: "#" },
   { title: "Live Games", url: "livegames" },
   { title: "Game Schedule", url: "gameschedule" },
-  { title: "Game Results", url: "#" },
-  { title: "News", url: "#" },
-  { title: "Gallery", url: "#" },
-  { title: "Participants", url: "#" },
+  { title: "Game Results", url: "results" },
+  { title: "News", url: "news" },
+  { title: "Gallery", url: "publicgallery" },
 ];
 
 const theme = createTheme();
@@ -27,10 +25,7 @@ export default function FunOlympic() {
         <Outlet />
       </Container>
 
-      <Footer
-        title="Footer"
-        description="Something here to give the footer a purpose!"
-      />
+      {/* <Footer title="Fun Olympic 2022" description="@CopyRight!" /> */}
     </ThemeProvider>
   );
 }

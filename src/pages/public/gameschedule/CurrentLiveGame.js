@@ -6,7 +6,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
-const UpComingGame = () => {
+const CurrentLiveGame = () => {
   const initialState = {
     games: [],
   };
@@ -15,7 +15,7 @@ const UpComingGame = () => {
 
   useEffect(() => {
     axios
-      .get("https://localhost:7084/api/Public/GetUpcomingLiveSchedule")
+      .get("https://localhost:7084/api/Public/GetCurrentLiveSchedule")
       .then((response) => {
         console.log(response.data.value);
         setState({ games: response.data.value });
@@ -61,4 +61,4 @@ const UpComingGame = () => {
   );
 };
 
-export default UpComingGame;
+export default CurrentLiveGame;
