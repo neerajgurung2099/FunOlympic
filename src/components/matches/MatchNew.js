@@ -189,6 +189,7 @@ const MatchNew = () => {
           GameId: parseInt(values.gameId),
           GameName: "",
           GameDescription: "",
+          matches: [],
         })
         .then((response) => {
           if (response.data.value) {

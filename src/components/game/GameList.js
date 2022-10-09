@@ -5,12 +5,15 @@ import { Box } from "@mui/system";
 import Skeleton from "@mui/material/Skeleton";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { Typography } from "@mui/material";
-
+import { Typography, Button } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
 const GameList = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState({
     loading: true,
-    errorFetching: false,
+    alertOpen: false,
+    alertMessage: "",
+    alertType: "",
     rows: [],
   });
 
@@ -34,22 +37,65 @@ const GameList = () => {
       field: "actions",
       headerName: "Actions",
       width: 200,
-      renderCell: () => {
+      renderCell: (params) => {
         return (
-          <div className="cell-action">
-            <div className="view-button">View</div>
-            <div className="delete-button">Delete</div>
-          </div>
+          <>
+            <Button
+              component={Link}
+              variant="outlined"
+              to={`${params.row.id}`}
+              sx={{ mr: 1 }}
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleGameDelete(params.row.id)}
+              variant="outlined"
+            >
+              Delete
+            </Button>
+          </>
         );
       },
     },
   ];
 
+  const handleGameDelete = (gameId) => {
+    axios
+      .post("https://localhost:7084/api/Game/DeleteGame", {
+        GameId: gameId,
+        GameName: "",
+        GameDescription: "",
+        matches: [],
+      })
+      .then((response) => {
+        var result = JSON.parse(response.data.value);
+        if (result.Status == 200) {
+          navigate(0);
+        } else {
+          setState({
+            ...state,
+            alertOpen: true,
+            alertMessage: "Failed to delete",
+            alertType: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setState({
+          ...state,
+          alertOpen: true,
+          alertMessage: "Failed to delete",
+          alertType: "error",
+        });
+      });
+  };
   const handleAlertClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    setState({ ...state, errorFetching: false });
+    setState({ ...state, alertOpen: false });
   };
   useEffect(() => {
     setState({ ...state, loading: true });
@@ -120,16 +166,16 @@ const GameList = () => {
               rowsPerPageOptions={[5]}
             />
             <Snackbar
-              open={state.errorFetching}
+              open={state.alerOpen}
               autoHideDuration={1000}
               onClose={handleAlertClose}
             >
               <Alert
                 onClose={handleAlertClose}
-                severity={state.errorFetching ? "error" : "success"}
+                severity={state.alertType}
                 sx={{ width: "100%" }}
               >
-                {state.errorFetching && "Something went wrong"}
+                {state.alertMessage}
               </Alert>
             </Snackbar>
           </Box>

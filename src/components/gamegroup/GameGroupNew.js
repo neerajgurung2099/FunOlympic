@@ -44,6 +44,7 @@ const GameGroupNew = () => {
         GroupName: values.groupName,
         GroupDescription: values.groupDescription,
         View: values.view,
+        Games: [],
       })
       .then((response) => {
         if (response.data.value) {

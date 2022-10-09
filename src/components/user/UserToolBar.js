@@ -1,5 +1,6 @@
 import BreadCrumb from "../common/BreadCrumb";
 import { Box, Button, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
 const UserToolBar = () => {
   return (
     <Box
@@ -9,24 +10,17 @@ const UserToolBar = () => {
         justifyContent: "space-between",
         flexWrap: "wrap",
         m: -1,
+        mb: 1,
       }}
     >
       <Typography sx={{ m: 1 }} variant="h4">
         <BreadCrumb
-          initial={{
-            title: "User",
-            link: "/user",
-          }}
           breadcrumbNameMap={{
-            "/edit": "Edit",
+            "user/edit": "Edit",
+            user: "Users",
           }}
         />
       </Typography>
-      <Box sx={{ m: 1 }}>
-        <Button color="primary" variant="contained">
-          Add Customers
-        </Button>
-      </Box>
     </Box>
   );
 };

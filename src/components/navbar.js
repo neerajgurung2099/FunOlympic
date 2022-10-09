@@ -4,6 +4,8 @@ import React from "react";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import { useAuth } from "../service/Auth";
+import { useNavigate } from "react-router-dom";
 const Navbar = ({ drawerWidth, handleDrawerToggle }) => {
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -19,6 +21,13 @@ const Navbar = ({ drawerWidth, handleDrawerToggle }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const navigate = useNavigate();
+  const authenticate = useAuth();
+  const signOut = () => {
+    authenticate.logout();
+    navigate("/adminlogin", { replace: true });
+  };
+
   return (
     <>
       <CssBaseline />
@@ -67,7 +76,7 @@ const Navbar = ({ drawerWidth, handleDrawerToggle }) => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Sign Out</MenuItem>
+              <MenuItem onClick={signOut}>Sign Out</MenuItem>
             </Menu>
           </>
         </Toolbar>

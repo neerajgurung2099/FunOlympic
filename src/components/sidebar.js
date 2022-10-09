@@ -20,7 +20,6 @@ import SportsIcon from "@mui/icons-material/Sports";
 import SportsMartialArtsIcon from "@mui/icons-material/SportsMartialArts";
 import GroupsIcon from "@mui/icons-material/Groups";
 const SideBarNavList = [
-  { id: "dashboard", title: "Dashboard", route: "/", icon: <DashboardIcon /> },
   { id: "user", title: "User", route: "/user", icon: <GroupIcon /> },
   {
     id: "gameGroup",

@@ -19,20 +19,24 @@ import IosSwitch from "../common/IosSwitch";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const NewsAdd = () => {
+const GameUpdate = () => {
+  const navigate = useNavigate();
+  const params = useParams();
+  const gameId = params.gameId;
   const initialState = {
-    newsTitle: "",
-    newsDescription: "",
+    gameName: "",
+    gameDescription: "",
     view: true,
-    groupId: "",
-    open: false,
+    totalMatches: 0,
     loading: false,
-    success: false,
-    groupList: [],
+    alertOpen: false,
+    alertType: "",
+    alertMessage: "",
   };
   const [values, setValues] = useState(initialState);
 
@@ -40,42 +44,42 @@ const NewsAdd = () => {
     if (reason === "clickaway") {
       return;
     }
-    setValues({ ...values, open: false });
+    setValues({ ...values, alertOpen: false });
   };
 
   const handleSubmit = () => {
     setValues({ ...values, loading: true });
     axios
-      .post("https://localhost:7084/api/Game/InsertNews", {
-        NewsTitle: values.newsTitle,
-        NewsDescription: values.newsDescription,
+      .post("https://localhost:7084/api/Game/UpdateGame", {
+        GameName: values.gameName,
+        GameDescription: values.gameDescription,
         View: values.view,
-        GroupId: values.groupId,
+        TotalMatches: values.totalMatches,
+        matches: [],
+        GameId: gameId,
       })
       .then((response) => {
         if (response.data.value) {
           const data = JSON.parse(response.data.value);
           if (data.Status == 200) {
-            setValues({
-              ...initialState,
-              groupList: values.groupList,
-              open: true,
-              success: true,
-            });
+            navigate("/game");
           } else {
             setValues({
               ...values,
               loading: false,
-              open: true,
-              success: false,
+
+              alertOpen: true,
+              alertMessage: "Something went wrong",
+              alertType: "error",
             });
           }
         } else {
           setValues({
             ...values,
             loading: false,
-            open: true,
-            success: false,
+            alertOpen: true,
+            alertMessage: "Something went wrong",
+            alertType: "error",
           });
         }
       })
@@ -84,8 +88,9 @@ const NewsAdd = () => {
         setValues({
           ...values,
           loading: false,
-          open: true,
-          success: false,
+          alertOpen: true,
+          alertMessage: "Something went wrong",
+          alertType: "error",
         });
       });
   };
@@ -96,26 +101,25 @@ const NewsAdd = () => {
 
   useEffect(() => {
     axios
-      .get("https://localhost:7084/api/Game/GetAllGameGroup")
-      .then((response) => {
-        if (response.data.value) {
-          var result = JSON.parse(response.data.value);
-          var obj = {};
-          var arr = [];
-          for (var i = 0; i < result.length; i++) {
-            obj = {
-              id: result[i]["Group_Id"],
-              groupName: result[i]["Group_Name"],
-            };
-            arr.push(obj);
-          }
-          setValues({ ...values, groupList: arr });
-        } else {
-        }
+      .post("https://localhost:7084/api/Game/GetGameDetailsById", {
+        GameId: gameId,
+        GameDescription: "",
+        GameName: "",
+        matches: [],
       })
-      .catch((error) => {});
+      .then((response) => {
+        var result = JSON.parse(response.data.value);
+        console.log(result);
+        setValues({
+          ...values,
+          gameName: result[0]["Game_Name"],
+          gameDescription: result[0]["Game_Description"],
+          view: result[0]["View"],
+          totalMatches: result[0]["Total_Matches"],
+        });
+      })
+      .catch((error) => console.log(error));
   }, []);
-
   return (
     <Box
       component="form"
@@ -127,19 +131,19 @@ const NewsAdd = () => {
     >
       <Card>
         <Snackbar
-          open={values.open}
+          open={values.alertOpen}
           autoHideDuration={1000}
           onClose={handleAlertClose}
         >
           <Alert
             onClose={handleAlertClose}
-            severity={values.success ? "success" : "error"}
+            severity={values.alertType}
             sx={{ width: "100%" }}
           >
-            {values.success ? "Succesfully Saved" : "Failed to save"}
+            {values.alertMessage}
           </Alert>
         </Snackbar>
-        <CardHeader subheader="Create new News" title="News" />
+        <CardHeader subheader="Update game" title="Game" />
         <Divider />
         <CardContent>
           <Grid container spacing={1}>
@@ -147,44 +151,39 @@ const NewsAdd = () => {
               <TextField
                 sx={{ width: "100% !important" }}
                 helperText="Please specify Game Name"
-                label="News Title"
-                name="newsTitle"
+                label="Game Name"
+                name="gameName"
                 onChange={handleChange}
                 required
-                value={values.newsTitle}
+                value={values.gameName}
                 variant="outlined"
               />
             </Grid>
             <Grid item md={9} xs={12}>
               <TextField
                 sx={{ width: "100% !important" }}
-                helperText="Please specify News Description"
-                label="News Description"
-                name="newsDescription"
+                helperText="Please specify Game Description"
+                label="Game Description"
+                name="gameDescription"
                 onChange={handleChange}
                 required
-                value={values.newsDescription}
+                value={values.gameDescription}
                 variant="outlined"
               />
             </Grid>
+
             <Grid item md={3} xs={12}>
-              <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
-                <InputLabel id="group-label">Game Group</InputLabel>
-                <Select
-                  labelId="group-label"
-                  id="group-select"
-                  value={values.groupId}
-                  label="Group Name"
-                  name="groupId"
-                  onChange={handleChange}
-                >
-                  {values.groupList.map((group) => (
-                    <MenuItem value={group.id} key={group.id}>
-                      {group.groupName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <TextField
+                sx={{ width: "100% !important" }}
+                helperText="Please specify Total Matches"
+                label="Total Matches"
+                name="totalMatches"
+                onChange={handleChange}
+                required
+                value={values.totalMatches}
+                variant="outlined"
+                type="number"
+              />
             </Grid>
 
             <Grid item md={12} xs={12}>
@@ -196,9 +195,9 @@ const NewsAdd = () => {
                       setValues({ ...values, view: !values.view })
                     }
                     sx={{ mr: 2 }}
-                    defaultChecked
                   />
                 }
+                checked={values.view}
                 label="View"
               />
             </Grid>
@@ -221,4 +220,4 @@ const NewsAdd = () => {
   );
 };
 
-export default NewsAdd;
+export default GameUpdate;

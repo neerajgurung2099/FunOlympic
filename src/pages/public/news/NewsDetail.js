@@ -42,7 +42,7 @@ const NewsDetail = () => {
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
               <img
-                src="/images/3ee3863f-5e67-48fd-8663-d47ee4a016c9.jpg"
+                src="https://i.ytimg.com/vi/rCEDIo5srLk/maxresdefault.jpg"
                 style={{
                   height: 500,
                   width: "100%",

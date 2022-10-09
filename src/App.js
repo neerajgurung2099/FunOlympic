@@ -4,8 +4,10 @@ import CountryNew from "./components/country/CountryNew";
 import GalleryDetail from "./components/gallery/GalleryDetail";
 import GameList from "./components/game/GameList";
 import GameNew from "./components/game/GameNew";
+import GameUpdate from "./components/game/GameUpdate";
 import GameGroupList from "./components/gamegroup/GameGroupList";
 import GameGroupNew from "./components/gamegroup/GameGroupNew";
+import GameGroupUpdate from "./components/gamegroup/GameGroupUpdate";
 import MatchList from "./components/matches/MatchList";
 import MatchNew from "./components/matches/MatchNew";
 import NewsAdd from "./components/news/NewsAdd";
@@ -16,6 +18,9 @@ import ResultDetails from "./components/result/ResultDetails";
 import ResultList from "./components/result/ResultList";
 import Teamlist from "./components/team/TeamList";
 import TeamNew from "./components/team/TeamNew";
+import UserDetail from "./components/user/UserDetail";
+import UserList from "./components/user/UserList";
+import AdminLogin from "./pages/admin/AdminLogin";
 import Country from "./pages/admin/Country";
 import Gallery from "./pages/admin/Gallery";
 import Game from "./pages/admin/Game";
@@ -38,6 +43,7 @@ import PublicNews from "./pages/public/news/PublicNews";
 import PublicResults from "./pages/public/results/PublicResults";
 import WatchGame from "./pages/public/watchgame/WatchGame";
 import { AuthProvider } from "./service/Auth";
+import { RequireAdminAuth } from "./service/RequireAdminAuth";
 import { RequireAuth } from "./service/RequireAuth";
 
 function App() {
@@ -45,15 +51,21 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route element={<RequireAuth role={"admin"} />}>
-            <Route path="/user" element={<User />} />
+          <Route path="/adminlogin" element={<AdminLogin />} />
+          <Route element={<RequireAdminAuth />}>
+            <Route path="/user" element={<User />}>
+              <Route index element={<UserList />} />
+              <Route path="/user/:userId" element={<UserDetail />} />
+            </Route>
             <Route path="/gamegroup" element={<GameGroup />}>
               <Route index element={<GameGroupList />} />
               <Route path="new" element={<GameGroupNew />} />
+              <Route path="/gamegroup/:groupId" element={<GameGroupUpdate />} />
             </Route>
             <Route path="/game" element={<Game />}>
               <Route index element={<GameList />} />
               <Route path="new" element={<GameNew />} />
+              <Route path=":gameId" element={<GameUpdate />} />
             </Route>
             <Route path="/matches" element={<Matches />}>
               <Route index element={<MatchList />} />

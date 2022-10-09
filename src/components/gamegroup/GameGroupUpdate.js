@@ -8,10 +8,6 @@ import {
   Grid,
   TextField,
   FormControlLabel,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { LoadingButton } from "@mui/lab";
@@ -19,20 +15,20 @@ import IosSwitch from "../common/IosSwitch";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const NewsAdd = () => {
+const GameGroupUpdate = () => {
+  const navigate = useNavigate();
   const initialState = {
-    newsTitle: "",
-    newsDescription: "",
+    groupName: "",
+    groupDescription: "",
     view: true,
-    groupId: "",
     open: false,
     loading: false,
     success: false,
-    groupList: [],
   };
   const [values, setValues] = useState(initialState);
 
@@ -43,25 +39,43 @@ const NewsAdd = () => {
     setValues({ ...values, open: false });
   };
 
+  const params = useParams();
+  const groupId = params.groupId;
+  useEffect(() => {
+    axios
+      .post("https://localhost:7084/api/Game/GetGroupDetailsById", {
+        GroupId: groupId,
+        GroupDescription: "",
+        GroupName: "",
+        Games: [],
+      })
+      .then((response) => {
+        var result = JSON.parse(response.data.value);
+        setValues({
+          ...values,
+          groupName: result[0]["Group_Name"],
+          groupDescription: result[0]["Group_Description"],
+          view: result[0]["View"],
+        });
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
   const handleSubmit = () => {
     setValues({ ...values, loading: true });
     axios
-      .post("https://localhost:7084/api/Game/InsertNews", {
-        NewsTitle: values.newsTitle,
-        NewsDescription: values.newsDescription,
+      .post("https://localhost:7084/api/Game/UpdateGameGroup", {
+        GroupId: groupId,
+        GroupName: values.groupName,
+        GroupDescription: values.groupDescription,
         View: values.view,
-        GroupId: values.groupId,
+        Games: [],
       })
       .then((response) => {
         if (response.data.value) {
           const data = JSON.parse(response.data.value);
           if (data.Status == 200) {
-            setValues({
-              ...initialState,
-              groupList: values.groupList,
-              open: true,
-              success: true,
-            });
+            navigate("/gamegroup");
           } else {
             setValues({
               ...values,
@@ -94,28 +108,6 @@ const NewsAdd = () => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
-  useEffect(() => {
-    axios
-      .get("https://localhost:7084/api/Game/GetAllGameGroup")
-      .then((response) => {
-        if (response.data.value) {
-          var result = JSON.parse(response.data.value);
-          var obj = {};
-          var arr = [];
-          for (var i = 0; i < result.length; i++) {
-            obj = {
-              id: result[i]["Group_Id"],
-              groupName: result[i]["Group_Name"],
-            };
-            arr.push(obj);
-          }
-          setValues({ ...values, groupList: arr });
-        } else {
-        }
-      })
-      .catch((error) => {});
-  }, []);
-
   return (
     <Box
       component="form"
@@ -139,54 +131,34 @@ const NewsAdd = () => {
             {values.success ? "Succesfully Saved" : "Failed to save"}
           </Alert>
         </Snackbar>
-        <CardHeader subheader="Create new News" title="News" />
+        <CardHeader subheader="Update game group" title="Update Group" />
         <Divider />
         <CardContent>
           <Grid container spacing={1}>
             <Grid item md={3} xs={12}>
               <TextField
                 sx={{ width: "100% !important" }}
-                helperText="Please specify Game Name"
-                label="News Title"
-                name="newsTitle"
+                helperText="Please specify Group Name"
+                label="Group Name"
+                name="groupName"
                 onChange={handleChange}
                 required
-                value={values.newsTitle}
+                value={values.groupName}
                 variant="outlined"
               />
             </Grid>
             <Grid item md={9} xs={12}>
               <TextField
                 sx={{ width: "100% !important" }}
-                helperText="Please specify News Description"
-                label="News Description"
-                name="newsDescription"
+                helperText="Please specify Group Description"
+                label="Group Description"
+                name="groupDescription"
                 onChange={handleChange}
                 required
-                value={values.newsDescription}
+                value={values.groupDescription}
                 variant="outlined"
               />
             </Grid>
-            <Grid item md={3} xs={12}>
-              <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
-                <InputLabel id="group-label">Game Group</InputLabel>
-                <Select
-                  labelId="group-label"
-                  id="group-select"
-                  value={values.groupId}
-                  label="Group Name"
-                  name="groupId"
-                  onChange={handleChange}
-                >
-                  {values.groupList.map((group) => (
-                    <MenuItem value={group.id} key={group.id}>
-                      {group.groupName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
             <Grid item md={12} xs={12}>
               <FormControlLabel
                 sx={{ ml: 2 }}
@@ -196,9 +168,9 @@ const NewsAdd = () => {
                       setValues({ ...values, view: !values.view })
                     }
                     sx={{ mr: 2 }}
-                    defaultChecked
                   />
                 }
+                checked={values.view}
                 label="View"
               />
             </Grid>
@@ -221,4 +193,4 @@ const NewsAdd = () => {
   );
 };
 
-export default NewsAdd;
+export default GameGroupUpdate;

@@ -32,7 +32,7 @@ const PublicResults = () => {
       })
       .then((response) => {
         var result = JSON.parse(response.data.value);
-        console.log(result[0]["Game_Name"]);
+        console.log(result);
         var ParticipantType = result[0]["ParticpantType"];
         if (ParticipantType == 1 || ParticipantType == 2) {
           setState({
@@ -42,7 +42,7 @@ const PublicResults = () => {
             Participant1: result[0]["ParticipantName"],
             Participant2: result[1]["ParticipantName"],
             Point1: result[0]["Points"] == "" ? 0 : result[0]["Points"],
-            Point1: result[1]["Points"] == "" ? 0 : result[1]["Points"],
+            Point2: result[1]["Points"] == "" ? 0 : result[1]["Points"],
             ParticipantList: [],
           });
         } else {

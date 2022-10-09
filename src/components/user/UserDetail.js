@@ -7,7 +7,6 @@ import {
   Divider,
   Grid,
   TextField,
-  FormControlLabel,
   FormControl,
   InputLabel,
   Select,
@@ -15,24 +14,26 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { LoadingButton } from "@mui/lab";
-import IosSwitch from "../common/IosSwitch";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import axios from "axios";
-
+import { useParams, useNavigate } from "react-router-dom";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const NewsAdd = () => {
+const UserDetail = () => {
+  const params = useParams();
+  const userId = params.userId;
+
+  const navigate = useNavigate();
   const initialState = {
-    newsTitle: "",
-    newsDescription: "",
-    view: true,
-    groupId: "",
+    userName: "",
+    userId: "",
+    userPassword: "",
+    email: "",
     open: false,
     loading: false,
     success: false,
-    groupList: [],
   };
   const [values, setValues] = useState(initialState);
 
@@ -46,22 +47,19 @@ const NewsAdd = () => {
   const handleSubmit = () => {
     setValues({ ...values, loading: true });
     axios
-      .post("https://localhost:7084/api/Game/InsertNews", {
-        NewsTitle: values.newsTitle,
-        NewsDescription: values.newsDescription,
-        View: values.view,
-        GroupId: values.groupId,
+      .post("https://localhost:7084/api/Game/UpdateUser", {
+        UserId: values.userId,
+        UserName: values.userName,
+        UserPassword: values.userPassword,
+        Email: values.email,
       })
       .then((response) => {
         if (response.data.value) {
           const data = JSON.parse(response.data.value);
           if (data.Status == 200) {
-            setValues({
-              ...initialState,
-              groupList: values.groupList,
-              open: true,
-              success: true,
-            });
+            setValues({ ...initialState, open: true, success: true });
+
+            navigate("/user");
           } else {
             setValues({
               ...values,
@@ -80,7 +78,6 @@ const NewsAdd = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
         setValues({
           ...values,
           loading: false,
@@ -96,24 +93,23 @@ const NewsAdd = () => {
 
   useEffect(() => {
     axios
-      .get("https://localhost:7084/api/Game/GetAllGameGroup")
-      .then((response) => {
-        if (response.data.value) {
-          var result = JSON.parse(response.data.value);
-          var obj = {};
-          var arr = [];
-          for (var i = 0; i < result.length; i++) {
-            obj = {
-              id: result[i]["Group_Id"],
-              groupName: result[i]["Group_Name"],
-            };
-            arr.push(obj);
-          }
-          setValues({ ...values, groupList: arr });
-        } else {
-        }
+      .post("https://localhost:7084/api/Game/GetUserByUserId", {
+        UserId: userId,
+        UserName: "",
+        UserPassword: "",
+        Email: "",
       })
-      .catch((error) => {});
+      .then((response) => {
+        var result = JSON.parse(response.data.value);
+        setValues({
+          ...values,
+          userName: result[0]["User_Name"],
+          userPassword: result[0]["User_Password"],
+          email: result[0]["Email"],
+          userId: userId,
+        });
+      })
+      .catch((error) => console.log(error));
   }, []);
 
   return (
@@ -139,67 +135,44 @@ const NewsAdd = () => {
             {values.success ? "Succesfully Saved" : "Failed to save"}
           </Alert>
         </Snackbar>
-        <CardHeader subheader="Create new News" title="News" />
+        <CardHeader subheader="Update User Details" title="User" />
         <Divider />
         <CardContent>
           <Grid container spacing={1}>
             <Grid item md={3} xs={12}>
               <TextField
                 sx={{ width: "100% !important" }}
-                helperText="Please specify Game Name"
-                label="News Title"
-                name="newsTitle"
+                helperText="Please specify User Name"
+                label="User Name"
+                name="userName"
                 onChange={handleChange}
                 required
-                value={values.newsTitle}
+                value={values.userName}
                 variant="outlined"
               />
             </Grid>
             <Grid item md={9} xs={12}>
               <TextField
                 sx={{ width: "100% !important" }}
-                helperText="Please specify News Description"
-                label="News Description"
-                name="newsDescription"
+                helperText="Please specify User Password"
+                label="User Password"
+                name="userPassword"
                 onChange={handleChange}
                 required
-                value={values.newsDescription}
+                value={values.userPassword}
                 variant="outlined"
               />
             </Grid>
-            <Grid item md={3} xs={12}>
-              <FormControl fullWidth sx={{ ml: 1, mt: 1 }}>
-                <InputLabel id="group-label">Game Group</InputLabel>
-                <Select
-                  labelId="group-label"
-                  id="group-select"
-                  value={values.groupId}
-                  label="Group Name"
-                  name="groupId"
-                  onChange={handleChange}
-                >
-                  {values.groupList.map((group) => (
-                    <MenuItem value={group.id} key={group.id}>
-                      {group.groupName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item md={12} xs={12}>
-              <FormControlLabel
-                sx={{ ml: 2 }}
-                control={
-                  <IosSwitch
-                    onChange={() =>
-                      setValues({ ...values, view: !values.view })
-                    }
-                    sx={{ mr: 2 }}
-                    defaultChecked
-                  />
-                }
-                label="View"
+            <Grid item md={9} xs={12}>
+              <TextField
+                sx={{ width: "100% !important" }}
+                helperText="Please specify User Email"
+                label="Email"
+                name="email"
+                onChange={handleChange}
+                required
+                value={values.email}
+                variant="outlined"
               />
             </Grid>
             <Grid item xs={12}>
@@ -211,7 +184,7 @@ const NewsAdd = () => {
                 onClick={handleSubmit}
                 loading={values.loading ? true : false}
               >
-                Save
+                Update
               </LoadingButton>
             </Grid>
           </Grid>
@@ -221,4 +194,4 @@ const NewsAdd = () => {
   );
 };
 
-export default NewsAdd;
+export default UserDetail;

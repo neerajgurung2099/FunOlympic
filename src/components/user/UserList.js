@@ -3,67 +3,29 @@ import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import { Box } from "@mui/system";
 import Skeleton from "@mui/material/Skeleton";
-import Checkbox from "@mui/material/Checkbox";
-import { Snackbar } from "@mui/material";
+import { Snackbar, Button } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { Button, Typography } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-const GameGroupList = () => {
+import { Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+const UserList = () => {
   const navigate = useNavigate();
   const [state, setState] = useState({
     loading: true,
+    rows: [],
     alertOpen: false,
     alertType: "",
     alertMessage: "",
-    rows: [],
+    updateRow: false,
   });
 
-  const columns = [
-    { field: "sno", headerName: "SNO", width: 70 },
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "groupName", headerName: "Group name", width: 250 },
-    { field: "groupDescription", headerName: "Group Description", width: 300 },
-    {
-      field: "view",
-      headerName: "View",
-      sortable: false,
-      width: 100,
-    },
-    { field: "createdDate", headerName: "Created Date", width: 200 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <>
-            <Button
-              component={Link}
-              variant="outlined"
-              to={`${params.row.id}`}
-              sx={{ mr: 1 }}
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={() => handleGroupDelete(params.row.id)}
-              variant="outlined"
-            >
-              Delete
-            </Button>
-          </>
-        );
-      },
-    },
-  ];
-
-  const handleGroupDelete = (groupId) => {
+  const handleUserDelete = (userId) => {
     axios
-      .post("https://localhost:7084/api/Game/DeleteGroup", {
-        GroupId: groupId,
-        GroupName: "",
-        GroupDescription: "",
-        Games: [],
+      .post("https://localhost:7084/api/Game/DeleteUser", {
+        UserId: userId,
+        UserName: "",
+        UserPassword: "",
+        Email: "",
       })
       .then((response) => {
         var result = JSON.parse(response.data.value);
@@ -87,6 +49,44 @@ const GameGroupList = () => {
         });
       });
   };
+
+  const columns = [
+    { field: "id", headerName: "SNO", width: 70 },
+    { field: "userId", headerName: "User Id", width: 70 },
+    { field: "userName", headerName: "User Name", width: 300 },
+    {
+      field: "email",
+      headerName: "Email",
+      width: 300,
+    },
+    { field: "createdDate", headerName: "Created Date", width: 150 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 160,
+      renderCell: (params) => {
+        return (
+          <>
+            <Button
+              component={Link}
+              variant="outlined"
+              to={`${params.row.userId}`}
+              sx={{ mr: 1 }}
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleUserDelete(params.row.userId)}
+              variant="outlined"
+            >
+              Delete
+            </Button>
+          </>
+        );
+      },
+    },
+  ];
+
   const handleAlertClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -96,26 +96,24 @@ const GameGroupList = () => {
   useEffect(() => {
     setState({ ...state, loading: true });
     axios
-      .get("https://localhost:7084/api/Game/GetAllGameGroup")
+      .get("https://localhost:7084/api/Game/GetAllUsers")
       .then((response) => {
         if (response.data.value) {
           var result = JSON.parse(response.data.value);
           if (result.length >= 0) {
-            console.log(result);
             var arr = [];
             var obj = {};
             for (var i = 0; i < result.length; i++) {
               obj = {
-                sno: i + 1,
-                id: result[i]["Group_Id"],
-                groupName: result[i]["Group_Name"],
-                groupDescription: result[i]["Group_Description"],
-                view: result[i]["View"],
+                id: i + 1,
+                userId: result[i]["Login_Id"],
+                userName: result[i]["User_Name"],
+                userPassword: result[i]["User_Password"],
+                email: result[i]["Email"],
                 createdDate: result[i]["Created_Date"],
               };
               arr.push(obj);
             }
-            console.log(arr);
             setState({
               ...state,
               loading: false,
@@ -124,31 +122,30 @@ const GameGroupList = () => {
           } else {
             setState({
               rows: [],
-              alertOpen: true,
-              alertMessage: "Something went wrong",
-              alertType: "error",
               loading: false,
+              alertOpen: true,
+              alertType: "error",
+              alertMessage: "Somethign went wrong",
             });
           }
         } else {
           setState({
             alertOpen: true,
-            alertMessage: "Something went wrong",
             alertType: "error",
+            alertMessage: "Somethign went wrong",
             loading: false,
           });
         }
       })
       .catch((error) => {
-        console.log(error);
         setState({
           alertOpen: true,
-          alertMessage: "Something went wrong",
           alertType: "error",
+          alertMessage: "Somethign went wrong",
           loading: false,
         });
       });
-  }, []);
+  }, [state.updateRow]);
 
   const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -167,13 +164,12 @@ const GameGroupList = () => {
         </Box>
       ) : (
         <>
-          {console.log(state.rows)}
           <Box style={{ height: 600, width: "100%" }}>
             <DataGrid
               rows={state.rows}
               columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
             />
             <Snackbar
               open={state.alertOpen}
@@ -195,4 +191,4 @@ const GameGroupList = () => {
   );
 };
 
-export default GameGroupList;
+export default UserList;

@@ -58,7 +58,13 @@ const PlayerNew = () => {
         if (response.data.value) {
           const data = JSON.parse(response.data.value);
           if (data.Status == 200) {
-            setValues({ ...initialState, open: true, success: true });
+            setValues({
+              ...initialState,
+              open: true,
+              success: true,
+              groupList: values.groupList,
+              countryList: values.countryList,
+            });
           } else {
             setValues({
               ...values,
