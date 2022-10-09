@@ -37,67 +37,73 @@ import NewsDetail from "./pages/public/news/NewsDetail";
 import PublicNews from "./pages/public/news/PublicNews";
 import PublicResults from "./pages/public/results/PublicResults";
 import WatchGame from "./pages/public/watchgame/WatchGame";
+import { AuthProvider } from "./service/Auth";
+import { RequireAuth } from "./service/RequireAuth";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/user" element={<User />} />
-        <Route path="/gamegroup" element={<GameGroup />}>
-          <Route index element={<GameGroupList />} />
-          <Route path="new" element={<GameGroupNew />} />
-        </Route>
-        <Route path="/game" element={<Game />}>
-          <Route index element={<GameList />} />
-          <Route path="new" element={<GameNew />} />
-        </Route>
-        <Route path="/matches" element={<Matches />}>
-          <Route index element={<MatchList />} />
-          <Route path="new" element={<MatchNew />} />
-        </Route>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<RequireAuth role={"admin"} />}>
+            <Route path="/user" element={<User />} />
+            <Route path="/gamegroup" element={<GameGroup />}>
+              <Route index element={<GameGroupList />} />
+              <Route path="new" element={<GameGroupNew />} />
+            </Route>
+            <Route path="/game" element={<Game />}>
+              <Route index element={<GameList />} />
+              <Route path="new" element={<GameNew />} />
+            </Route>
+            <Route path="/matches" element={<Matches />}>
+              <Route index element={<MatchList />} />
+              <Route path="new" element={<MatchNew />} />
+            </Route>
 
-        <Route path="/players" element={<Player />}>
-          <Route index element={<Playerlist />} />
-          <Route path="new" element={<PlayerNew />} />
-        </Route>
+            <Route path="/players" element={<Player />}>
+              <Route index element={<Playerlist />} />
+              <Route path="new" element={<PlayerNew />} />
+            </Route>
 
-        <Route path="/teams" element={<Team />}>
-          <Route index element={<Teamlist />} />
-          <Route path="new" element={<TeamNew />} />
-        </Route>
-        <Route path="/country" element={<Country />}>
-          <Route index element={<CountryList />} />
-          <Route path="new" element={<CountryNew />} />
-        </Route>
-        <Route path="/results" element={<Results />}>
-          <Route index element={<ResultList />} />
-          <Route path=":matchId" element={<ResultDetails />} />
-        </Route>
+            <Route path="/teams" element={<Team />}>
+              <Route index element={<Teamlist />} />
+              <Route path="new" element={<TeamNew />} />
+            </Route>
+            <Route path="/country" element={<Country />}>
+              <Route index element={<CountryList />} />
+              <Route path="new" element={<CountryNew />} />
+            </Route>
+            <Route path="/results" element={<Results />}>
+              <Route index element={<ResultList />} />
+              <Route path=":matchId" element={<ResultDetails />} />
+            </Route>
 
-        <Route path="/gallery" element={<Gallery />}>
-          <Route index element={<GalleryDetail />} />
-        </Route>
+            <Route path="/gallery" element={<Gallery />}>
+              <Route index element={<GalleryDetail />} />
+            </Route>
 
-        <Route path="/news" element={<News />}>
-          <Route index element={<NewsList />} />
-          <Route path="new" element={<NewsAdd />} />
-        </Route>
-        <Route path="/funolympic" element={<FunOlympic />}>
-          <Route index path="livegames" element={<LiveGames />} />
-          <Route path="watchgame">
-            <Route path=":matchId" element={<WatchGame />} />
+            <Route path="/news" element={<News />}>
+              <Route index element={<NewsList />} />
+              <Route path="new" element={<NewsAdd />} />
+            </Route>
           </Route>
-          <Route path="gameschedule" element={<GameSchedule />} />
-          <Route path="publicgallery" element={<PublicGallery />} />
-          <Route path="news" element={<PublicNews />}></Route>
-          <Route path="news/:newsId" element={<NewsDetail />} />
+          <Route path="/" element={<FunOlympic />} />
+          <Route path="/funolympic" element={<FunOlympic />}>
+            <Route index path="livegames" element={<LiveGames />} />
+            <Route path="watchgame">
+              <Route path=":matchId" element={<WatchGame />} />
+            </Route>
+            <Route path="gameschedule" element={<GameSchedule />} />
+            <Route path="publicgallery" element={<PublicGallery />} />
+            <Route path="news" element={<PublicNews />}></Route>
+            <Route path="news/:newsId" element={<NewsDetail />} />
 
-          <Route path="results" element={<PublicResults />} />
-        </Route>
-        <Route path="login" element={<Login />} />
-      </Routes>
-    </BrowserRouter>
+            <Route path="results" element={<PublicResults />} />
+          </Route>
+          <Route path="login" element={<Login />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

@@ -1,17 +1,12 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
+import React, { useState } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import UserLogin from "./UserLogin";
+import UserRegister from "./UserRegister";
+import UserForgetPassword from "./UserForgetPassword";
 
 const theme = createTheme();
 
@@ -25,6 +20,34 @@ export default function Login() {
     });
   };
 
+  const initialState = {
+    UserLogin: true,
+    UserRegister: false,
+    UserForgetPassword: false,
+  };
+  const [state, setState] = useState(initialState);
+
+  const handleUserNav = (navTo) => {
+    navTo === "UserLogin" &&
+      setState({
+        UserLogin: true,
+        UserRegister: false,
+        UserForgetPassword: false,
+      });
+
+    navTo === "UserRegister" &&
+      setState({
+        UserLogin: false,
+        UserRegister: true,
+        UserForgetPassword: false,
+      });
+    navTo === "UserForgetPassword" &&
+      setState({
+        UserLogin: false,
+        UserRegister: false,
+        UserForgetPassword: true,
+      });
+  };
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
@@ -56,59 +79,12 @@ export default function Login() {
               alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
-            <Box
-              component="form"
-              noValidate
-              onSubmit={handleSubmit}
-              sx={{ mt: 1 }}
-            >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-            </Box>
+            {state.UserLogin && <UserLogin handleRoute={handleUserNav} />}
+
+            {state.UserRegister && <UserRegister handleRoute={handleUserNav} />}
+            {state.UserForgetPassword && (
+              <UserForgetPassword handleRoute={handleUserNav} />
+            )}
           </Box>
         </Grid>
       </Grid>

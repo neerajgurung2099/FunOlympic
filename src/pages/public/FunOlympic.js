@@ -7,11 +7,11 @@ import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
 
 const sections = [
-  { title: "Live Games", url: "livegames" },
-  { title: "Game Schedule", url: "gameschedule" },
-  { title: "Game Results", url: "results" },
-  { title: "News", url: "news" },
-  { title: "Gallery", url: "publicgallery" },
+  { title: "Live Games", url: "/funolympic/livegames" },
+  { title: "Game Schedule", url: "/funolympic/gameschedule" },
+  { title: "Game Results", url: "/funolympic/results" },
+  { title: "News", url: "/funolympic/news" },
+  { title: "Gallery", url: "/funolympic/publicgallery" },
 ];
 
 const theme = createTheme();
