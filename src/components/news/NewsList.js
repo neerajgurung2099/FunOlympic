@@ -6,13 +6,50 @@ import Skeleton from "@mui/material/Skeleton";
 import Checkbox from "@mui/material/Checkbox";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { Typography } from "@mui/material";
+import { Typography, Button } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
 const NewsList = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState({
     loading: true,
-    errorFetching: false,
+    alertOpen: true,
+    alertMessage: "",
+    alertType: "",
     rows: [],
   });
+
+  const handleNewsDelete = (newsId) => {
+    axios
+      .post("https://localhost:7084/api/Game/DeleteNews", {
+        NewsId: newsId,
+        NewsTitle: "",
+        NewsDescription: "",
+        View: false,
+        GroupId: 0,
+      })
+      .then((response) => {
+        var result = JSON.parse(response.data.value);
+        if (result.Status == 200) {
+          navigate(0);
+        } else {
+          setState({
+            ...state,
+            alertOpen: true,
+            alertMessage: "Failed to delete",
+            alertType: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setState({
+          ...state,
+          alertOpen: true,
+          alertMessage: "Failed to delete",
+          alertType: "error",
+        });
+      });
+  };
 
   const columns = [
     { field: "sno", headerName: "SNO", width: 70 },
@@ -31,12 +68,24 @@ const NewsList = () => {
       field: "actions",
       headerName: "Actions",
       width: 200,
-      renderCell: () => {
+      renderCell: (params) => {
         return (
-          <div className="cell-action">
-            <div className="view-button">View</div>
-            <div className="delete-button">Delete</div>
-          </div>
+          <>
+            <Button
+              component={Link}
+              variant="outlined"
+              to={`${params.row.id}`}
+              sx={{ mr: 1 }}
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleNewsDelete(params.row.id)}
+              variant="outlined"
+            >
+              Delete
+            </Button>
+          </>
         );
       },
     },
@@ -46,7 +95,7 @@ const NewsList = () => {
     if (reason === "clickaway") {
       return;
     }
-    setState({ ...state, errorFetching: false });
+    setState({ ...state, alertOpen: false });
   };
   useEffect(() => {
     setState({ ...state, loading: true });
@@ -78,15 +127,31 @@ const NewsList = () => {
               rows: state.rows.concat(arr),
             });
           } else {
-            setState({ rows: [], errorFetching: true, loading: false });
+            setState({
+              rows: [],
+              alertOpen: true,
+              alertMessage: "Something went wrong",
+              alertType: "error",
+              loading: false,
+            });
           }
         } else {
-          setState({ errorFetching: true, loading: false });
+          setState({
+            alertOpen: true,
+            alertMessage: "Something went wrong",
+            alertType: "error",
+            loading: false,
+          });
         }
       })
       .catch((error) => {
         console.log(error);
-        setState({ errorFetching: true, loading: false });
+        setState({
+          alertOpen: true,
+          alertMessage: "Something went wrong",
+          alertType: "error",
+          loading: false,
+        });
       });
   }, []);
 
@@ -116,16 +181,16 @@ const NewsList = () => {
               rowsPerPageOptions={[5]}
             />
             <Snackbar
-              open={state.errorFetching}
+              open={state.alertOpen}
               autoHideDuration={1000}
               onClose={handleAlertClose}
             >
               <Alert
                 onClose={handleAlertClose}
-                severity={state.errorFetching ? "error" : "success"}
+                severity={state.alertType}
                 sx={{ width: "100%" }}
               >
-                {state.errorFetching && "Something went wrong"}
+                {state.alertMessage}
               </Alert>
             </Snackbar>
           </Box>

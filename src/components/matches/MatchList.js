@@ -6,16 +6,57 @@ import Skeleton from "@mui/material/Skeleton";
 import Checkbox from "@mui/material/Checkbox";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { Typography } from "@mui/material";
+import { Typography, Button } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
 const MatchList = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState({
     loading: true,
-    errorFetching: false,
     rows: [],
+    alertOpen: false,
+    alertMessage: "",
+    alertType: "",
   });
+
+  const handleMatchDelete = (matchId) => {
+    axios
+      .post("https://localhost:7084/api/Game/DeleteMatch", {
+        MatchId: matchId,
+        GameId: 0,
+        View: false,
+        MatchTitle: "",
+        LiveLink: "",
+        startTime: "",
+        startDate: "",
+        matchParticipants: [],
+      })
+      .then((response) => {
+        var result = JSON.parse(response.data.value);
+        if (result.Status == 200) {
+          navigate(0);
+        } else {
+          setState({
+            ...state,
+            alertOpen: true,
+            alertMessage: "Failed to delete",
+            alertType: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setState({
+          ...state,
+          alertOpen: true,
+          alertMessage: "Failed to delete",
+          alertType: "error",
+        });
+      });
+  };
 
   const columns = [
     { field: "id", headerName: "SNO", width: 70 },
+    { field: "matchId", headerName: "Match Id", width: 70 },
     { field: "gameName", headerName: "Game Name", width: 150 },
     { field: "matchTitle", headerName: "Match Title", width: 300 },
     {
@@ -30,12 +71,24 @@ const MatchList = () => {
       field: "actions",
       headerName: "Actions",
       width: 160,
-      renderCell: () => {
+      renderCell: (params) => {
         return (
-          <div className="cell-action">
-            <div className="view-button">View</div>
-            <div className="delete-button">Delete</div>
-          </div>
+          <>
+            <Button
+              component={Link}
+              variant="outlined"
+              to={`${params.row.matchId}`}
+              sx={{ mr: 1 }}
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleMatchDelete(params.row.matchId)}
+              variant="outlined"
+            >
+              Delete
+            </Button>
+          </>
         );
       },
     },
@@ -61,6 +114,7 @@ const MatchList = () => {
             for (var i = 0; i < result.length; i++) {
               obj = {
                 id: i + 1,
+                matchId: result[i]["Match_Id"],
                 gameName: result[i]["Game_Name"],
                 matchTitle: result[i]["Match_Title"],
                 view: result[i]["View"],
@@ -114,16 +168,16 @@ const MatchList = () => {
               rowsPerPageOptions={[10]}
             />
             <Snackbar
-              open={state.errorFetching}
+              open={state.alertOpen}
               autoHideDuration={1000}
               onClose={handleAlertClose}
             >
               <Alert
                 onClose={handleAlertClose}
-                severity={state.errorFetching ? "error" : "success"}
+                severity={state.alertType}
                 sx={{ width: "100%" }}
               >
-                {state.errorFetching && "Something went wrong"}
+                {state.alertMessage}
               </Alert>
             </Snackbar>
           </Box>

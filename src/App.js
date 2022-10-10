@@ -10,8 +10,10 @@ import GameGroupNew from "./components/gamegroup/GameGroupNew";
 import GameGroupUpdate from "./components/gamegroup/GameGroupUpdate";
 import MatchList from "./components/matches/MatchList";
 import MatchNew from "./components/matches/MatchNew";
+import MatchUpdate from "./components/matches/MatchUpdate";
 import NewsAdd from "./components/news/NewsAdd";
 import NewsList from "./components/news/NewsList";
+import NewsUpdate from "./components/news/NewsUpdate";
 import Playerlist from "./components/player/Playerlist";
 import PlayerNew from "./components/player/PlayerNew";
 import ResultDetails from "./components/result/ResultDetails";
@@ -70,6 +72,7 @@ function App() {
             <Route path="/matches" element={<Matches />}>
               <Route index element={<MatchList />} />
               <Route path="new" element={<MatchNew />} />
+              <Route path="/matches/:matchId" element={<MatchUpdate />} />
             </Route>
 
             <Route path="/players" element={<Player />}>
@@ -97,6 +100,7 @@ function App() {
             <Route path="/news" element={<News />}>
               <Route index element={<NewsList />} />
               <Route path="new" element={<NewsAdd />} />
+              <Route path="/news/:newsId" element={<NewsUpdate />} />
             </Route>
           </Route>
           <Route path="/" element={<FunOlympic />} />
@@ -105,10 +109,38 @@ function App() {
             <Route path="watchgame">
               <Route path=":matchId" element={<WatchGame />} />
             </Route>
-            <Route path="gameschedule" element={<GameSchedule />} />
-            <Route path="publicgallery" element={<PublicGallery />} />
-            <Route path="news" element={<PublicNews />}></Route>
-            <Route path="news/:newsId" element={<NewsDetail />} />
+            <Route
+              path="gameschedule"
+              element={
+                <RequireAuth>
+                  <GameSchedule />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="publicgallery"
+              element={
+                <RequireAuth>
+                  <PublicGallery />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="news"
+              element={
+                <RequireAuth>
+                  <PublicNews />
+                </RequireAuth>
+              }
+            ></Route>
+            <Route
+              path="news/:newsId"
+              element={
+                <RequireAuth>
+                  <NewsDetail />
+                </RequireAuth>
+              }
+            />
 
             <Route path="results" element={<PublicResults />} />
           </Route>

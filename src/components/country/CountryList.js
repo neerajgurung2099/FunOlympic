@@ -5,13 +5,47 @@ import { Box } from "@mui/system";
 import Skeleton from "@mui/material/Skeleton";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { Typography } from "@mui/material";
+import { Typography, Button } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
 const CountryList = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState({
     loading: true,
     errorFetching: false,
     rows: [],
   });
+
+  const handleCountryDelete = (matchId) => {
+    axios
+      .post("https://localhost:7084/api/Game/DeleteGame", {
+        GameId: matchId,
+        GameName: "",
+        GameDescription: "",
+        matches: [],
+      })
+      .then((response) => {
+        var result = JSON.parse(response.data.value);
+        if (result.Status == 200) {
+          navigate(0);
+        } else {
+          setState({
+            ...state,
+            alertOpen: true,
+            alertMessage: "Failed to delete",
+            alertType: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setState({
+          ...state,
+          alertOpen: true,
+          alertMessage: "Failed to delete",
+          alertType: "error",
+        });
+      });
+  };
 
   const columns = [
     { field: "id", headerName: "SNO", width: 70 },
@@ -20,12 +54,24 @@ const CountryList = () => {
       field: "actions",
       headerName: "Actions",
       width: 160,
-      renderCell: () => {
+      renderCell: (params) => {
         return (
-          <div className="cell-action">
-            <div className="view-button">View</div>
-            <div className="delete-button">Delete</div>
-          </div>
+          <>
+            <Button
+              component={Link}
+              variant="outlined"
+              to={`${params.row.matchId}`}
+              sx={{ mr: 1 }}
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleCountryDelete(params.row.matchId)}
+              variant="outlined"
+            >
+              Delete
+            </Button>
+          </>
         );
       },
     },
