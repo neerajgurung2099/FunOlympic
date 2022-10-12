@@ -7,7 +7,36 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 const UserForgetPassword = ({ handleRoute }) => {
+  const initialState = {
+    emailSent: false,
+    email: "",
+  };
+
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.value });
+  };
+  const navigate = useNavigate();
+  const [state, setState] = useState(initialState);
+
+  const handlePasswordChange = () => {
+    axios
+      .post("https://localhost:7084/api/Login/ResetPassword", {
+        Email: state.email,
+        UserName: "",
+        UserPassword: "",
+      })
+      .then((response) => {
+        setState({ ...state, emailSent: true });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <>
       <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
@@ -26,16 +55,23 @@ const UserForgetPassword = ({ handleRoute }) => {
           name="email"
           autoComplete="email"
           autoFocus
+          onChange={handleChange}
+          value={state.email}
         />
 
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Forget Password
-        </Button>
+        {state.emailSent == false ? (
+          <Button
+            onClick={() => handlePasswordChange()}
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Forget Password
+          </Button>
+        ) : (
+          <Typography>Please Check your email !!!</Typography>
+        )}
+
         <Grid container>
           <Grid item xs md={12}>
             <Link onClick={() => handleRoute("UserLogin")} variant="body2">

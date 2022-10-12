@@ -28,7 +28,6 @@ import Gallery from "./pages/admin/Gallery";
 import Game from "./pages/admin/Game";
 import GameGroup from "./pages/admin/GameGroup";
 
-import Home from "./pages/admin/Home";
 import Matches from "./pages/admin/Matches";
 import News from "./pages/admin/News";
 import Player from "./pages/admin/Player";
@@ -105,42 +104,29 @@ function App() {
           </Route>
           <Route path="/" element={<FunOlympic />} />
           <Route path="/funolympic" element={<FunOlympic />}>
-            <Route index path="livegames" element={<LiveGames />} />
+            <Route
+              index
+              path="livegames"
+              element={
+                <RequireAuth>
+                  <LiveGames />
+                </RequireAuth>
+              }
+            />
             <Route path="watchgame">
-              <Route path=":matchId" element={<WatchGame />} />
+              <Route
+                path=":matchId"
+                element={
+                  <RequireAuth>
+                    <WatchGame />
+                  </RequireAuth>
+                }
+              />
             </Route>
-            <Route
-              path="gameschedule"
-              element={
-                <RequireAuth>
-                  <GameSchedule />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="publicgallery"
-              element={
-                <RequireAuth>
-                  <PublicGallery />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="news"
-              element={
-                <RequireAuth>
-                  <PublicNews />
-                </RequireAuth>
-              }
-            ></Route>
-            <Route
-              path="news/:newsId"
-              element={
-                <RequireAuth>
-                  <NewsDetail />
-                </RequireAuth>
-              }
-            />
+            <Route path="gameschedule" element={<GameSchedule />} />
+            <Route path="publicgallery" element={<PublicGallery />} />
+            <Route path="news" element={<PublicNews />}></Route>
+            <Route path="news/:newsId" element={<NewsDetail />} />
 
             <Route path="results" element={<PublicResults />} />
           </Route>

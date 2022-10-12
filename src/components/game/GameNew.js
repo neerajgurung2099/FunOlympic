@@ -57,6 +57,7 @@ const GameNew = () => {
         ParticipantType: values.participantType,
         TotalMatches: values.totalMatches,
         Category: values.category,
+        matches: [],
       })
       .then((response) => {
         if (response.data.value) {

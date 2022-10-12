@@ -25,7 +25,9 @@ export default function AdminLogin() {
     email: "",
     password: "",
     loading: false,
-    open: false,
+    alertType: "",
+    alertMessage: "",
+    alertOpen: false,
   };
   const [state, setState] = useState(initialState);
   const Alert = React.forwardRef(function Alert(props, ref) {
@@ -53,7 +55,12 @@ export default function AdminLogin() {
           setState({ ...state, loading: false });
           navigate("/user", { replace: true });
         } else {
-          setState({ ...state, open: true });
+          setState({
+            ...state,
+            alertType: "error",
+            alertMessage: "Incorrect Username or password",
+            alertOpen: true,
+          });
         }
       })
       .catch((error) => {
@@ -70,23 +77,43 @@ export default function AdminLogin() {
     if (reason === "clickaway") {
       return;
     }
-    setState({ ...state, open: false });
+    setState({ ...state, alertOpen: false });
+  };
+
+  const handlePasswordChange = () => {
+    axios
+      .post("https://localhost:7084/api/Login/AdminResetPassword", {
+        Email: "",
+        UserName: "",
+        UserPassword: "",
+      })
+      .then((response) => {
+        setState({
+          ...state,
+          alertType: "success",
+          alertMessage: "Email sent",
+          alertOpen: true,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <Snackbar
-          open={state.open}
+          open={state.alertOpen}
           autoHideDuration={1000}
           onClose={handleAlertClose}
         >
           <Alert
             onClose={handleAlertClose}
-            severity={"error"}
+            severity={state.alertType}
             sx={{ width: "100%" }}
           >
-            {"Incorrect Email or Password"}
+            {state.alertMessage}
           </Alert>
         </Snackbar>
         <CssBaseline />
@@ -146,7 +173,7 @@ export default function AdminLogin() {
             </LoadingButton>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link onClick={handlePasswordChange} variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
